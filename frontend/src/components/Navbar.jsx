@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import Logout from "./logout";
-import Login from "./login";
+import Login from "./Login";
 import { useAuth } from "../context/AuthProvider";
 
 const Navbar = () => {
