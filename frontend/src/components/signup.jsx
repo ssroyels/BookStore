@@ -40,15 +40,15 @@ function Signup() {
   };
   return (
     <>
-    <div className="text-center d-flex pt-[30vh] h-screen bg-gray-500">
+    <div className="border h-screen w-screen  bg-gray-200 pt-[10vh]  md:pt-[20vh] flex justify-center text-align:center">
      {/* The button to open modal */}
-<a href="#my_modal_8" className="btn bg-red-400 z-20 font-bold text-white">SignUp</a>
+{/* <a href="#my_modal_8" className="btn bg-red-400 z-20 font-bold text-white">SignUp</a> */}
 
 {/* Put this part before </body> tag */}
-<div className="modal" role="dialog" id="my_modal_8">
-  <div className="modal-box">
-  <h3 className="font-bold text-lg">SignUp</h3>
-       <form onSubmit={handleSubmit(onSubmit)} method="dialog" className="space-y-4 mt-4">
+<div className="" >
+  <div className="w-screen border border-black rounded-sm py-2 ">
+  <h3 className="font-bold text-lg text-center">SignUp</h3>
+       <form onSubmit={handleSubmit(onSubmit)}  className="space-y-4 mt-4 text-center">
                 <div>
                 <span>Name</span>
                 <br />
@@ -90,11 +90,11 @@ function Signup() {
                 <div className="flex justify-between items-center mt-4">
                   <button
                     type="submit"
-                    className="bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200"
+                    className="bg-pink-500 ml-[10px] md:ml-[80vh] text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200"
                   >
                     SignUp
                   </button>
-                  <span className="text-sm">
+                  <span className="text-sm mr-[10px] md:mr-[80vh]">
                     Have an account?{" "}
                     <Link
                       to="/"
@@ -105,9 +105,9 @@ function Signup() {
                   </span>
                 </div>
               </form>
-    <div className="modal-action">
-      <a href="#" className="btn">Close</a>
-    </div>
+    {/* <div className="modal-action"> */}
+      {/* <a href="#" className="btn">Close</a> */}
+    {/* </div> */}
   </div>
 </div>
     </div>
