@@ -59,7 +59,7 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-80 py-1 px-3 border rounded-md outline-none"
+                className="w-80 py-1 text-black px-3 border rounded-md outline-none"
                 {...register("email",{required:true})}
               />
               <br />
@@ -71,7 +71,7 @@ const Login = () => {
               <input
                 type="password"
                 placeholder="Enter your password"
-                className="w-80 py-1 px-3 border rounded-md outline-none"
+                className="w-80 text-black py-1 px-3 border rounded-md outline-none"
                 {...register("password",{required:true})}
               />
               <br /><br />
