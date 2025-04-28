@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 dotenv.config();
 
-const PORT = process.env.PORT || 9000;
+const PORT = 9000;
 const URI = process.env.MONGOURI;
 
 // Middleware
