@@ -41,9 +41,9 @@ const Login = () => {
     })
   };
   return (
-    <div>
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
+    <div className=''>
+      <dialog id="my_modal_3" className="modal ">
+        <div className="modal-box bg-gray-400">
           <button
             onClick={() => document.getElementById("my_modal_3").close()}
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

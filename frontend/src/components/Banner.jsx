@@ -4,7 +4,7 @@ import React from 'react'
 const Banner = () => {
   return (
     <div className='md:flex md:justify-around '>
-      <div className='mt-[15vh]'>
+      <div className='mt-[8vh] pt-[10vh] md:pt-0  md:mt-[15vh]'>
         <h1 className='md:text-4xl text-2xl ml-[15px] mr-[15px] font-bold'>Hello,Welcomes here to  learn <br /> something <span className='text-pink-500'>new everyday!!!</span></h1>
         <p className='mt-[25px] md:text-xl text-sm ml-[15px] mr-[15px] font-semibold'>Lorem ipsum dolor sit amet consectetur 
           adipisicing elit. Aliquid ipsum libero  <br />
