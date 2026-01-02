@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // ✅ exact frontend
+    origin: "https://bookstore-1-rkd5.onrender.com", // ✅ exact frontend
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true, // ✅ cookies allowed
   })
