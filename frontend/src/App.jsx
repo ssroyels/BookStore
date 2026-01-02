@@ -1,31 +1,43 @@
-import React from 'react'
+import { Routes, Route } from "react-router-dom";
+import Home from "./home/home";
+import Course from "./course/course";
+import Signup from "./components/signup";
+import { Toaster } from "react-hot-toast";
 
-import { Navigate, Route,Routes } from 'react-router-dom'
-import Home from './home/home'
-import Course from './course/course'
-import Signup from './components/signup'
-import {Toaster} from "react-hot-toast";
-import { useAuth } from './context/AuthProvider'
-
-
-
+import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicRoute from "./routes/PublicRoute";
+import NotFound from "./components/NotFound";
 
 const App = () => {
-  const [authUser,setAuthUser] = useAuth();
   return (
-    <div>
-    <Routes>
-      <Route  path='/' element= {<Home/>} />
-      <Route path='/course' element={authUser?<Course/>:<Navigate to ="/signup"/>} />
-      <Route path='/signup' element = {<Signup/>} />
-      
-      
-      
-    </Routes>
-    <Toaster/>
-    
-    </div>
-  )
-}
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-export default App
+        <Route
+          path="/course"
+          element={
+            <ProtectedRoute>
+              <Course />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      <Toaster position="top-right" />
+    </>
+  );
+};
+
+export default App;

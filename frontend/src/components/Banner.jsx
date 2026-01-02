@@ -1,36 +1,117 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
+/* 🔤 ALL WORDS USED IN COMPONENT */
+const WORDS = [
+  "Developers",
+  "Creators",
+  "Founders",
+  "Engineers",
+  "Students",
+  "Designers",
+  "Freelancers",
+  "Entrepreneurs",
+];
 
 const Banner = () => {
+  const [email, setEmail] = useState("");
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  /* ⌨️ TYPEWRITER LOGIC */
+  useEffect(() => {
+    const current = WORDS[index];
+    const speed = deleting ? 50 : 120;
+
+    const timer = setTimeout(() => {
+      if (!deleting) {
+        setText(current.slice(0, text.length + 1));
+
+        if (text === current) {
+          setTimeout(() => setDeleting(true), 1000); // pause after full word
+        }
+      } else {
+        setText(current.slice(0, text.length - 1));
+
+        if (text === "") {
+          setDeleting(false);
+          setIndex((prev) => (prev + 1) % WORDS.length);
+        }
+      }
+    }, speed);
+
+    return () => clearTimeout(timer);
+  }, [text, deleting, index]);
+
+  /* 📧 EMAIL */
+  const handleSubmit = () => {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+    toast.success("Welcome aboard 🚀");
+    setEmail("");
+  };
+
   return (
-    <div className='md:flex md:justify-around '>
-      <div className='mt-[8vh] pt-[10vh] md:pt-0  md:mt-[15vh]'>
-        <h1 className='md:text-4xl text-2xl ml-[15px] mr-[15px] font-bold'>Hello,Welcomes here to  learn <br /> something <span className='text-pink-500'>new everyday!!!</span></h1>
-        <p className='mt-[25px] md:text-xl text-sm ml-[15px] mr-[15px] font-semibold'>Lorem ipsum dolor sit amet consectetur 
-          adipisicing elit. Aliquid ipsum libero  <br />
-          vero fugit eum dignissimos, cupiditate eos <br /> repellat 
-          natus, accusamus rem consectetur <br /> labore qui iure officiis 
-          ducimus minima possimus. Tempore?</p>
-          <label className="mt-[25px] ml-[15px] input input-bordered flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                className="w-4 h-4 opacity-70"
-              >
-                <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-              </svg>
-              <input type="text" className="grow text-black" placeholder="Email" />
-            </label>
+    <section className="max-w-screen-2xl mx-auto px-6 md:px-20 py-20">
+      <div className="grid md:grid-cols-2 gap-12 items-center">
+        
+        {/* LEFT */}
+        <div className="space-y-6">
+          <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+            Learn something
+            <span className="block bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              new every single day
+            </span>
 
-            <button className='mt-[25px]  btn bg-pink-500 ml-[15px] text-white'>Get Started</button>
-      </div>
-      <div className='md:mt-[15vh] mt-[5vh] md:ml-[0px] md:mr-[0px] ml-10'>
-        <img src="https://cdn.creazilla.com/cliparts/39999/bookstore-clipart-md.png" className='md:h-[35vh] h-[20vh]' alt="" />
-      </div>
-    </div>
-  )
-}
+            {/* 🔁 TYPEWRITER WORDS */}
+            <span className="block mt-3 text-pink-500">
+              for {text}
+              <span className="animate-pulse">|</span>
+            </span>
+          </h1>
 
-export default Banner
+          <p className="text-gray-600 text-sm md:text-lg max-w-xl">
+            Build real-world skills with free and premium courses designed for
+            developers, creators, and future founders.
+          </p>
+
+          {/* EMAIL */}
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-lg border focus:ring-2 focus:ring-pink-500 outline-none"
+            />
+
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600 transition"
+            >
+              Get Started
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400">
+            No spam. Unsubscribe anytime.
+          </p>
+        </div>
+
+        {/* RIGHT */}
+        <div className="flex justify-center md:justify-end">
+          <img
+            src="https://cdn.creazilla.com/cliparts/39999/bookstore-clipart-md.png"
+            alt="Learning illustration"
+            className="w-[220px] md:w-[380px] drop-shadow-2xl"
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Banner;

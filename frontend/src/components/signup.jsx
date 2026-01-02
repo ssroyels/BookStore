@@ -1,118 +1,160 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
-function Signup() {
 
-  const location = useLocation();
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    reset,
   } = useForm();
 
-  const onSubmit = async (data) => {
-    const userInfo = {
-      fullname: data.fullname,
-      email: data.email,
-      password: data.password,
-    };
-    await axios
-      .post("http://localhost:4000/user/signup", userInfo)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data) {
-          toast.success("Signup Successfully");
-          navigate(from);
-        }
-        localStorage.setItem("Users", JSON.stringify(res.data.user));
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log(err);
-          toast.error("Error: " + err.response.data.message);
-        }
-      });
-  };
-  return (
-    <>
-    <div className="border h-screen w-screen  bg-gray-200 pt-[10vh]  md:pt-[20vh] flex justify-center text-align:center">
-     {/* The button to open modal */}
-{/* <a href="#my_modal_8" className="btn bg-red-400 z-20 font-bold text-white">SignUp</a> */}
+  const [showPassword, setShowPassword] = useState(false);
 
-{/* Put this part before </body> tag */}
-<div className="" >
-  <div className="w-screen border border-black rounded-sm py-2 ">
-  <h3 className="font-bold text-lg text-center">SignUp</h3>
-       <form onSubmit={handleSubmit(onSubmit)}  className="space-y-4 mt-4 text-center">
-                <div>
-                <span>Name</span>
-                <br />
-                <input
-                  type="text"
-                  placeholder="Enter your fullname"
-                  className="w-80 px-3 py-1 border rounded-md outline-none"
-                  {...register("fullname", { required: true })}
-                />
-                <br />
-                {errors.fullname && (
-                  <span className="text-sm text-red-500">
-                    This field is required
-                  </span>
-                )}
-                  <label className="block">Email</label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-80 py-1 px-3 border rounded-md outline-none"
-                    {...register("email",{required:true})}
-                  />
-                  <br />
-                    {errors.email && <span className='text-red-500'>This field is required</span>}
-                </div>
-    
-                <div>
-                  <label className="block">Password</label>
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    className="w-80 py-1 px-3 border rounded-md outline-none"
-                    {...register("password",{required:true})}
-                  />
-                  <br /><br />
-                   {errors.password && <span className='text-red-500'>This field is required</span>} 
-                </div>
-    
-                <div className="flex justify-between items-center mt-4">
-                  <button
-                    type="submit"
-                    className="bg-pink-500 ml-[10px] md:ml-[80vh] text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200"
-                  >
-                    SignUp
-                  </button>
-                  <span className="text-sm mr-[10px] md:mr-[80vh]">
-                    Have an account?{" "}
-                    <Link
-                      to="/"
-                      className="underline text-blue-500 cursor-pointer"
-                    >
-                      Login
-                    </Link>
-                  </span>
-                </div>
-              </form>
-    {/* <div className="modal-action"> */}
-      {/* <a href="#" className="btn">Close</a> */}
-    {/* </div> */}
-  </div>
-</div>
+  const onSubmit = async (data) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/user/signup`,
+        {
+          fullname: data.fullname,
+          email: data.email,
+          password: data.password,
+        },
+        { withCredentials: true }
+      );
+
+      toast.success("Account created successfully 🎉");
+
+      // ⚠️ Best practice: auth context me set karo
+      localStorage.setItem("Users", JSON.stringify(res.data.user));
+
+      reset();
+      navigate(from, { replace: true });
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Signup failed"
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Create your account 🚀
+        </h2>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+          {/* FULL NAME */}
+          <div>
+            <label className="text-sm font-medium">Full Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+              {...register("fullname", {
+                required: "Full name is required",
+                minLength: {
+                  value: 3,
+                  message: "Minimum 3 characters",
+                },
+              })}
+            />
+            {errors.fullname && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.fullname.message}
+              </p>
+            )}
+          </div>
+
+          {/* EMAIL */}
+          <div>
+            <label className="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email address",
+                },
+              })}
+            />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className="text-sm font-medium">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "At least 6 characters",
+                  },
+                })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2 text-xs text-gray-500"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* SUBMIT */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="
+              w-full py-2 rounded-lg bg-pink-500 text-white font-medium
+              hover:bg-pink-600 transition
+              disabled:opacity-50 disabled:cursor-not-allowed
+            "
+          >
+            {isSubmitting ? "Creating account..." : "Sign Up"}
+          </button>
+        </form>
+
+        {/* FOOTER */}
+        <p className="text-sm text-center mt-6">
+          Already have an account?{" "}
+          <Link to="/" className="text-blue-500 hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
-    </>
   );
-}
+};
 
 export default Signup;

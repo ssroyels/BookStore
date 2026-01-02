@@ -1,107 +1,135 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthProvider";
 
-const Login = () => {
- 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+const Login = ({ onClose }) => {
+  const { login } = useAuth(); // ✅ use context helper
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm();
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const onSubmit = async (data) => {
- 
-      const userInfo = {
-      
-        email:data.email,
-        password:data.password
-      }
+    try {
+      const res = await axios.post(
+        `${API_URL}/user/login`,
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true, // 🍪 cookie-ready
+        }
+      );
 
-  
-  
-  
-    await axios.post("http://localhost:4000/user/login",userInfo)
-    .then((res) => {
-      console.log(res.data);
-      if(res.data) {
+      // 🔐 CENTRALIZED LOGIN
+      login(res.data.user);
 
-        toast.success("Login Successfully");
-        setTimeout(() => {
-          document.getElementById("my_modal_3").close();
-          window.location.reload();
-          localStorage.setItem("Users",JSON.stringify(res.data.user));
+      toast.success("Login successful 🚀");
 
-        },3000);
-     
-      }
-      localStorage.setItem("Users",JSON.stringify(res.data.user));
-    }).catch((err) => {
-      if(err.response) {
-        console.log(err);
-        toast.error("Error : "+err.response.data.message);
-      }
-    })
+      reset();
+      onClose?.();
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Invalid credentials"
+      );
+    }
   };
+
   return (
-    <div className=''>
-      <dialog id="my_modal_3" className="modal ">
-        <div className="modal-box bg-gray-400">
-          <button
-            onClick={() => document.getElementById("my_modal_3").close()}
-            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          >
-            ✕
-          </button>
+    <dialog open className="modal">
+      <div className="modal-box bg-base-100 rounded-xl shadow-xl">
 
-          <h3 className="font-bold text-lg">Login</h3>
+        {/* CLOSE */}
+        <button
+          onClick={onClose}
+          className="btn btn-sm btn-circle btn-ghost absolute right-3 top-3"
+        >
+          ✕
+        </button>
 
-          <form onSubmit={handleSubmit(onSubmit)} method="dialog" className="space-y-4 mt-4">
-            <div>
-              <label className="block">Email</label>
+        <h3 className="text-xl font-bold mb-6">Welcome Back 👋</h3>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+          {/* EMAIL */}
+          <div>
+            <label className="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+              {...register("email", { required: "Email is required" })}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className="text-sm font-medium">Password</label>
+            <div className="relative">
               <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-80 py-1 text-black px-3 border rounded-md outline-none"
-                {...register("email",{required:true})}
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+                {...register("password", {
+                  required: "Password is required",
+                })}
               />
-              <br />
-                {errors.email && <span className='text-red-500'>This field is required</span>}
-            </div>
-
-            <div>
-              <label className="block">Password</label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                className="w-80 text-black py-1 px-3 border rounded-md outline-none"
-                {...register("password",{required:true})}
-              />
-              <br /><br />
-               {errors.password && <span className='text-red-500'>This field is required</span>} 
-            </div>
-
-            <div className="flex justify-between items-center mt-4">
               <button
-                type="submit"
-                className="bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2 text-xs text-gray-500"
               >
-                Login
+                {showPassword ? "Hide" : "Show"}
               </button>
-              <span className="text-sm">
-                Not registered?{" "}
-                <Link
-                  to="/signup"
-                  className="underline text-blue-500 cursor-pointer"
-                >
-                  Signup
-                </Link>
-               
-              </span>
             </div>
-          </form>
-        </div>
-      </dialog>
-    </div>
-  )
-}
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-export default Login
+          {/* ACTIONS */}
+          <div className="flex items-center justify-between pt-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="
+                px-6 py-2 rounded-lg bg-pink-500 text-white font-medium
+                hover:bg-pink-600 transition disabled:opacity-50
+              "
+            >
+              {isSubmitting ? "Logging in..." : "Login"}
+            </button>
 
+            <Link
+              to="/signup"
+              className="text-sm text-blue-500 hover:underline"
+              onClick={onClose}
+            >
+              Create account
+            </Link>
+          </div>
+        </form>
+      </div>
+    </dialog>
+  );
+};
+
+export default Login;
