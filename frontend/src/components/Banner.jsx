@@ -104,7 +104,7 @@ const Banner = () => {
         {/* RIGHT */}
         <div className="flex justify-center md:justify-end">
           <img
-            src="https://cdn.creazilla.com/cliparts/39999/bookstore-clipart-md.png"
+            src="Banner(1).png"
             alt="Learning illustration"
             className="w-[220px] md:w-[380px] drop-shadow-2xl"
           />
